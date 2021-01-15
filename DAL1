@@ -23,41 +23,41 @@
 
 #Learning to assign variables ####
 #Run this line of code to assign your first variable.
-myFirstVar<- "Hello world!"
+myFirstVar <- "Hello world!"
 
 #Run myFirstVar in the console.
 myFirstVar
 
 #Code a second variable with a number.
-mySecondVar<-16
+mySecondVar <- 16
 
 #Run mySecondVar in the console.
 mySecondVar
 
 #Now let's practice assigning variables.
 #Assign "Clemson" to 'home'
-home<-"Clemson"
+home <- "Clemson"
 
 #Assign "Tigers: to 'h_mascot'
-h_mascot<-"Tigers"
+h_mascot <- "Tigers"
 
 #Assign "Ohio State" to 'away'
-away<-"Ohio State"
+away <- "Ohio State"
 
 #Assign 'Buckeyes' to 'a_mascot'
-a_mascot<-"Buckeyes"
+a_mascot <- "Buckeyes"
 
 #Assign 31 to 'homeScore'
-homeScore<-31
+homeScore <- 31
 
 #Assign 0 to 'awayScore'
-awayScore<-0
+awayScore <- 0
 
 #Assign True to homeWin
-homeWin<-TRUE
+homeWin <- TRUE
 
 #Assign FALSE to awayWin
-awaywin<-FALSE
+awaywin <- FALSE
 
 #Use class to identify the data type for the following variables
 class(h_mascot)
@@ -128,7 +128,7 @@ names(QB_df)[names(QB_df)=="vector_character"] <- "qbName"
 str(QB_df)
 
 #What is going on here?
-We changed the name of one of the data frame columns
+
 
 #Select the first row of QB_df
 QB_df[1,]
@@ -150,7 +150,7 @@ QB_df["qbName"]
 QB_df[3,2]
 
 #Now it is your turn.
-My_df <-data.frame(myCharVector, myNumericVector, myLogicalvector)
+My_df <- data.frame(myCharVector, myNumericVector, myLogicalvector)
 My_df
 str(My_df)
 My_df$myNumericVector
