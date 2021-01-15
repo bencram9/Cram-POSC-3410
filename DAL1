@@ -128,7 +128,7 @@ names(QB_df)[names(QB_df)=="vector_character"] <- "qbName"
 str(QB_df)
 
 #What is going on here?
-
+We changed the name of one of the data frame columns
 
 #Select the first row of QB_df
 QB_df[1,]
