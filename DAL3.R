@@ -69,24 +69,112 @@ gtd_df %>%
 Answer3<-c(31060)
 
 # Question 4: What percent of the total number of incidents in the data frame is there doubt about whether it is terrorism. Show both code and assign answer to a numeric vector? ####
-
-Answer4<- c()
-
-
-
-
-
+13785 + 146619 + 31060
+31060 / 191464 * 100
+  
+Answer4<- c(16.22237)
 
 # Question 5:  What were the top 3 years in terms of number of terrorist attacks.Show both code and answer. Assign a numeric vector to Answer5. ####
 
 gtd_df %>% 
-  filter()%>% # A filter command goes here.
-  %>% # A tidyerse command goes here. Which one? 
-  %>% # A tidyerse command goes here. Which one? 
+  filter(doubtterr==0)%>% # A filter command goes here.
+  group_by(iyear)%>% # A tidyerse command goes here. Which one? 
+  count()%>% # A tidyerse command goes here. Which one? 
   arrange()
 
-Answer5 <- c() # 3 numeric elements go into this vector. 
+Answer5 <- c(2014, 2015, 2016) # 3 numeric elements go into this vector. 
 
+# Explore Relationship between Number of Incidents and Number of Casualties, Types of Casualities #### 
+# Code a dataframe with year, number of incidents, variables for casualties: `gtd_casualties_df`
+gtd_casualties_df <- gtd_df %>% 
+  filter(iyear >= 1970, crit1 == 1 & crit2 == 1 & crit3 == 1) %>% 
+  group_by(iyear) %>%
+  #Fill in the below blank with the correct tidyverse command.
+  summarise(incidents = n(), casualities = (sum(nkill, na.rm = TRUE) + sum(nwound, na.rm = TRUE)), victims_killed = sum(nkill, na.rm = TRUE), victims_wounded = sum(nwound, na.rm = TRUE)) 
 
+# Question 6: How many incidents, per year, did we exclude because they did not have casualty data? What percentage have we been missing per year? Answer this question by creating a dataframe with year, number of incidents missing data in nkill or nwound,  number of incidents, and calculate the percent per year that are missing. #####
 
+# Create a dataframe with year and count of missing data. HINT: You will have to add conditions to filter. 
+missing_casualties_data <- gtd_df %>% 
+  filter(iyear >= 1970, crit1 == 1 & crit2 == 1 & crit3 == 1 & (is.na(nkill) | is.na(nwound))) %>% 
+  group_by(iyear)%>% #What tidyverse command goes here? 
+  count()%>% #What tidyverse command goes here? 
+  rename(missing =  n)
 
+# Add total incidents per year to missing_casualties_data
+missing_casualties_df <- left_join(missing_casualties_data, gtd_casualties_df, by = "iyear" ) 
+# We will talk about joins next week. You get to see an early example. 
+
+missing_casualties_df <- missing_casualties_df %>% 
+  select(iyear:incidents) %>% 
+  mutate(perc_missing = missing / incidents * 100) # Fill in this blank with the correct formula. 
+
+Answer6 <- missing_casualties_df
+Answer6
+
+# Question7: What is the overall trend in the lethality of terrorist incidents? You need to answer this question with both a plot and a text description ####
+
+# Create a data frame with year, number of incidents, number of casualties, number of victims killed, number of victims wounded, number of casualties / incident, number of victims killed /incident, number of victims wounded / incident. 
+gtd_casualties_df <- gtd_casualties_df %>% 
+  mutate(casualties_per_inc = casualities / incidents, victims_killed_per_inc = victims_killed / incidents, victims_wounded_per_inc = victims_wounded / incidents) 
+
+# Create a line plot of victims_killed_per_inc by year
+gtd_casualties_df %>% 
+  rename(year = iyear) %>% 
+  ggplot(aes(x=year)) + 
+  geom_line(aes(y=victims_killed_per_inc), color = "red") 
+
+# Create a line plot of victims_wounded_per_inc by year
+gtd_casualties_df %>% 
+  rename(year = iyear) %>% 
+  ggplot(aes(x=year)) + 
+  geom_line(aes(y=victims_wounded_per_inc), color = "darkred") 
+
+# Create a plot that Combines all these lines
+casualties_plot <- gtd_casualties_df %>% 
+  rename(year = iyear) %>% 
+  ggplot(aes(x=year))
+  
+
+# Add lines to casualties_plot
+casualties_plot <- casualties_plot +
+  geom_line(aes(y=victims_killed_per_inc, color = "Victims Killed per Incident")) + # Add the correct ggplot geometric layer. 
+  geom_line(aes(y=victims_wounded_per_inc, color = "Victims Wounded per Incident")) # Add the correct ggplot geometric layer. 
+
+# Add a legend 
+colors <- c("Victims Killed per Incident" = "red", "Victims Wounded per Incident" = "darkred")
+casualties_plot +
+  scale_color_manual(values = colors )+
+  labs(color = "",
+       y="Number") +
+  theme(legend.position = "bottom")
+
+Answer7_plot <- casualties_plot
+Answer7 <- "There is a huge spike in victims wounded per incident in the early 2000s, both lines appear to be trending downward towards the ending. Both lines were mostly increasing in the 80s and 90s"
+
+# Question8: What is the relationship between amount of ransom terrorists demanded and the actual amount of ransom paid. Do incidents in all regions follow the same pattern (i.e., add region as color or facet wrap, which one works better?)? Answer this question using a scatterplot and a text vector description? HINT: You may need to make 2 scatter plots (1 that includes all data and one that filters out outliers) ####
+# Base Scatterplot 
+gtd_df %>% 
+  ggplot(aes(x=ransomamt, y=ransompaid))+
+  geom_point()
+
+# Color Approach 
+# HINT: the format for scientific notation in R is 1e03 = 1000
+gtd_df %>% 
+  filter(ransompaid<1e08 & ransomamt < 2.5e08) %>% 
+  ggplot(aes(x=ransomamt, y=ransompaid, color=region_txt))+
+  geom_point()
+
+# Facet Wrap Approach 
+gtd_df %>% 
+  filter(ransompaid<1e08 & ransomamt < 2.5e08) %>% # What is the correct tidyverse command? 
+  ggplot(aes(x=ransomamt, y=ransompaid))+ # What is the correct ggplot command? 
+  geom_point()+ # What is the correct ggplot command? 
+  facet_wrap(~region_txt, scales = "free", nrow=4)
+
+Answer8_plot <- gtd_df %>% 
+  filter(ransompaid<1e08 & ransomamt < 2.5e08) %>% # What is the correct tidyverse command? 
+  ggplot(aes(x=ransomamt, y=ransompaid))+ # What is the correct ggplot command? 
+  geom_point()+ # What is the correct ggplot command? 
+  facet_wrap(~region_txt, scales = "free", nrow=4)
+Answer8<- "There do not appear to be similar trends between regions on the amount of ransom paid and the amount of ransom demanded. Ransom demands do not have the same success rate across regions. "
