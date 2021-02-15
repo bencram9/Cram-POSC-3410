@@ -175,4 +175,4 @@ ADVFRONT_by_SEX_df %>%
   geom_bar(stat="identity")
 
 # 5C) What are some aspects of this visualization that are wonky? Describe in detail what you want to change about this graph in the future. Assing your answer to Answer5C 
-Answer5C <- ""
+Answer5C <- "I don't really know what to change about this graph. Title it, rename y-axis?"
