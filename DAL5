@@ -27,8 +27,6 @@ library(infer)
 # What do you think we will have to do to the rows? To the columns?
 
 # Do we want something that looks roughly like this?
-View(frequency_table_df)
-View(chi_sq_df)
 
 # Data Wrangling ####
 analysis_df <- gss_df %>% 
