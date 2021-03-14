@@ -30,7 +30,7 @@ library(infer)
 
 # Data Wrangling ####
 analysis_df <- gss_df %>% 
-  filter(YEAR == 2018 & !is.na(NEXTGEN) & !is.na(INTSPACE) & (NEXTGEN == "Agree" | NEXTGEN == "Strongly agree" | NEXTGEN == "Strongly disagree") | NEXTGEN == "Disagree") & (INTSPACE == "Moderately interested" | INTSPACE == "Very intereseted" | INTSPACE == "Not at all interested") %>% 
+  filter(YEAR == 2018 & !is.na(NEXTGEN) & !is.na(INTSPACE) & (NEXTGEN == "Agree" | NEXTGEN == "Strongly agree" | NEXTGEN == "Strongly disagree") | NEXTGEN == "Disagree") & (INTSPACE == "Moderately interested" | INTSPACE == "Very interested" | INTSPACE == "Not at all interested") %>% 
   select(INTSPACE, NEXTGEN, WTSSALL) %>% 
   group_by(NEXTGEN, INTSPACE) %>% 
   summarise(count = sum(WTSSALL))
