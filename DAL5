@@ -30,7 +30,7 @@ library(infer)
 
 # Data Wrangling ####
 analysis_df <- gss_df %>% 
-  filter(YEAR == 2018 & !is.na(NEXTGEN) & !is.na(INTSPACE) & (NEXTGEN == "Agree" | NEXTGEN == "Strongly agree" | NEXTGEN == "Strongly disagree") | NEXTGEN == "Disagree") & (INTSPACE == "Moderately interested" | INTSPACE == "Very interested" | INTSPACE == "Not at all interested") %>% 
+  filter(YEAR == 2018 & !is.na(NEXTGEN) & !is.na(INTSPACE) & (NEXTGEN == "Agree" | NEXTGEN == "Strongly agree" | NEXTGEN == "Strongly disagree" | NEXTGEN == "Disagree") & (INTSPACE == "Moderately interested" | INTSPACE == "Very interested" | INTSPACE == "Not at all interested")) %>% 
   select(INTSPACE, NEXTGEN, WTSSALL) %>% 
   group_by(NEXTGEN, INTSPACE) %>% 
   summarise(count = sum(WTSSALL))
@@ -39,9 +39,11 @@ analysis_df <- gss_df %>%
 analysis_df <- analysis_df %>%
   mutate(NEXTGEN = str_remove_all(NEXTGEN, "Strongly"),
          NEXTGEN = str_to_lower(NEXTGEN),
-         NEXTGEN = str_trim(NEXTGEN, side = c(both))) %>%
+         NEXTGEN = str_trim(NEXTGEN, side = c("both"))) %>%
   group_by(NEXTGEN, INTSPACE) %>%
   summarise(count = sum(count))
+
+
 # Reorder factor variable INTSPACE
 analysis_df <- analysis_df %>% 
   mutate(INTSPACE = factor(INTSPACE))
