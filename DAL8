@@ -1,0 +1,48 @@
+# Set Up####
+# Libraries
+library(shiny)
+
+# UI####
+ui <- fluidPage(
+    # Page title 
+    titlePanel("POSC-3410 Example 2"),
+    
+    #Configure layout
+    sidebarLayout(
+        # Control panel 
+        sidebarPanel(
+            # Slider input for Year
+            sliderInput( 
+                "gss_years",
+                "Title that people will see",
+                min = min(gss_shiny$YEAR, na.rm=TRUE),
+                max = max(gss_shiny$YEAR, na.rm=TRUE),
+                value=c(min(gss_shiny$YEAR, na.rm=TRUE), max(gss_shiny$YEAR, na.rm=TRUE)),
+                sep=""
+            )
+        ),
+        mainPanel(
+            h1("Party affiliation and interest in space exploration"),
+            plotOutput("gss_plot"),
+            p("Description for DAL8, I do not yet know what I am doing")
+        )
+    )
+    
+)
+
+# Server####
+server<- function(input, output, session) {
+    # GSS Plot 
+    output$gss_plot <- renderPlot({
+        data <- gss_shiny %>% 
+            filter(YEAR >= input$gss_years [1] & YEAR <= input$gss_years [2])
+        data %>% 
+            ggplot(aes(x=PARTYID, y=n, fill=INTSPACE)) +
+            geom_bar(stat="identity")
+    })
+}
+
+# App####
+shinyApp(ui=ui, server=server)
+
+# Copyright (c) Grant Allard, 2021
