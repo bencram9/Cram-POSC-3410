@@ -1,0 +1,69 @@
+# Title: App for Research Project 
+# Author: Ben Cram
+# Date Created: 2021-04-20
+
+# Purpose:
+
+# Set Up####
+# Libraries
+library(shiny)
+
+gss_shiny <- gss_df %>% 
+    filter((PARTYID == "Strong democrat" | PARTYID == "Not str democrat" | PARTYID == "Ind,near dem" | PARTYID == "Independent" | PARTYID == "Ind,near rep" | PARTYID == "Not str republican" | PARTYID == "Strong republican") & (INTSPACE == "Very interested" | INTSPACE=="Moderately interested" | INTSPACE =="Not at all interested")) %>%
+    group_by(PARTYID, YEAR, INTSPACE) %>%
+    count()
+
+gss_shiny <- gss_shiny %>% 
+    mutate(INTSPACE = factor(INTSPACE, levels = c("Not at all interested", "Moderately interested", "Very interested")), 
+           PARTYID = factor(PARTYID, levels = c("Strong democrat", "Not str democrat", "Ind,near dem", "Independent", "Ind,near rep", "Not str republican", "Strong republican"))) %>% 
+    arrange(INTSPACE, PARTYID)
+# UI####
+ui <- fluidPage(
+    # Page title 
+    titlePanel("Party Affiliation and Space Exploration"),
+    
+    #Configure layout
+    sidebarLayout(
+        # Control panel 
+        sidebarPanel(
+            # Slider input for Year
+            sliderInput( 
+                "gss_years",
+                "Years",
+                min = min(gss_shiny$YEAR, na.rm=TRUE),
+                max = max(gss_shiny$YEAR, na.rm=TRUE),
+                value=c(min(gss_shiny$YEAR, na.rm=TRUE), max(gss_shiny$YEAR, na.rm=TRUE)),
+                sep=""
+            ), 
+            checkboxGroupInput("PartyInput", 
+                               "Select the parties you want to display",
+                               unique(gss_shiny$PARTYID), 
+                               c("Strong republican"))
+        ),
+        mainPanel(
+            h1("Party affiliation and interest in space exploration"),
+            plotOutput("gss_plot"),
+            p("The purpose of this application is to communicate the research between political affiliation and interest in space exploration. The theory of this project was that opinions on space exploration begins at a young age and further develops based on the political groups that one is a part of. The chi-square statistical test does not support this hypothesis. Therefore, political affiliation and interest in space exploration do not appear to have a significant relation. 
+              Reference: Smith, Tom W., Davern, Michael, Freese, Jeremy, and Morgan, Stephen, General Social Surveys, 1972-2018 [machine-readable data file] /Principal Investigator, Smith, Tom W.; Co-Principal Investigators, Michael Davern, Jeremy Freese, and Stephen Morgan; Sponsored by National Science Foundation. --NORC ed.-- Chicago: NORC, 2018: NORC at the University of Chicago [producer and distributor]. Data accessed from the GSS Data Explorer website at gssdataexplorer.norc.org.
+")
+        )
+    )
+    
+)
+
+# Server####
+server<- function(input, output, session) {
+    # GSS Plot 
+    output$gss_plot <- renderPlot({
+        data <- gss_shiny %>% 
+            filter(YEAR >= input$gss_years [1] & YEAR <= input$gss_years [2] & PARTYID %in% input$PartyInput)
+        data %>% 
+            ggplot(aes(x=PARTYID, y=n, fill=INTSPACE)) +
+            geom_bar(stat="identity")
+    })
+}
+
+# App####
+shinyApp(ui=ui, server=server)
+
+# Copyright (c) Grant Allard, 2021
